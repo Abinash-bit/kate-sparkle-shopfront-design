@@ -117,15 +117,18 @@ export const getProfile = async (): Promise<ProfileResponse> => {
       throw new Error('Authentication token not found');
     }
     
-    // Changed from GET to POST method as per API requirements
+    // We need to include default empty values for required fields to satisfy API validation
     const response = await fetch(`${API_BASE_URL}/profile`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      // Send an empty object to get profile data
-      body: JSON.stringify({}),
+      // Include required fields with placeholder values
+      body: JSON.stringify({
+        dob: "", // Default empty value
+        gender: "" // Default empty value
+      }),
     });
     
     if (!response.ok) {
