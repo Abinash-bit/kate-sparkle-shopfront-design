@@ -1,5 +1,5 @@
-
 import { toast } from "sonner";
+import { setUserEmail } from '@/utils/auth';
 
 interface SignupData {
   email: string;
@@ -71,6 +71,9 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
       throw new Error(errorData.detail || 'Login failed');
     }
     
+    // Save the user email when logging in
+    setUserEmail(data.username);
+    
     return await response.json();
   } catch (error) {
     console.error('Login error:', error);
@@ -101,7 +104,8 @@ export const updateProfile = async (data: ProfileData): Promise<ProfileResponse>
       throw new Error(errorData.detail || 'Profile update failed');
     }
     
-    return await response.json();
+    // After successful update, fetch the updated profile data
+    return await getProfile();
   } catch (error) {
     console.error('Profile update error:', error);
     toast.error('Failed to update profile: ' + (error instanceof Error ? error.message : String(error)));
@@ -136,7 +140,20 @@ export const getProfile = async (): Promise<ProfileResponse> => {
       throw new Error(errorData.detail || 'Failed to get profile');
     }
     
-    return await response.json();
+    const data = await response.json();
+    
+    // Check if the API is returning just a message or the actual profile data
+    if (data.msg && !data.email) {
+      // If we only get a message, construct a default profile response
+      // This is a workaround if the API doesn't return profile data directly
+      return {
+        email: localStorage.getItem('user_email') || '',
+        dob: '',
+        gender: ''
+      };
+    }
+    
+    return data;
   } catch (error) {
     console.error('Get profile error:', error);
     toast.error('Failed to get profile: ' + (error instanceof Error ? error.message : String(error)));
