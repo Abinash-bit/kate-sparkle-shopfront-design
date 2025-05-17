@@ -117,11 +117,15 @@ export const getProfile = async (): Promise<ProfileResponse> => {
       throw new Error('Authentication token not found');
     }
     
+    // Changed from GET to POST method as per API requirements
     const response = await fetch(`${API_BASE_URL}/profile`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
+      // Send an empty object to get profile data
+      body: JSON.stringify({}),
     });
     
     if (!response.ok) {
