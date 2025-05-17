@@ -14,6 +14,8 @@ export const setToken = (token: string): void => {
 export const removeToken = (): void => {
   localStorage.removeItem('access_token');
   localStorage.removeItem('user_email');
+  localStorage.removeItem('user_dob');
+  localStorage.removeItem('user_gender');
 };
 
 export const setUserEmail = (email: string): void => {
@@ -22,4 +24,16 @@ export const setUserEmail = (email: string): void => {
 
 export const getUserEmail = (): string | null => {
   return localStorage.getItem('user_email');
+};
+
+export const setUserProfile = (dob: string, gender: string): void => {
+  localStorage.setItem('user_dob', dob);
+  localStorage.setItem('user_gender', gender);
+};
+
+export const getUserProfile = (): { dob: string, gender: string } => {
+  return {
+    dob: localStorage.getItem('user_dob') || '',
+    gender: localStorage.getItem('user_gender') || ''
+  };
 };

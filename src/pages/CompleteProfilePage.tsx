@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useToast } from "@/hooks/use-toast";
 import { updateProfile } from '@/services/api';
-import { isAuthenticated } from '@/utils/auth';
+import { isAuthenticated, setUserProfile } from '@/utils/auth';
 
 const CompleteProfilePage = () => {
   const [dob, setDob] = useState('');
@@ -30,6 +30,10 @@ const CompleteProfilePage = () => {
     
     try {
       setLoading(true);
+      
+      // Store profile data locally before sending to API
+      setUserProfile(dob, gender);
+      
       await updateProfile({ dob, gender });
       
       toast({

@@ -1,5 +1,6 @@
+
 import { toast } from "sonner";
-import { setUserEmail } from '@/utils/auth';
+import { setUserEmail, getUserEmail } from '@/utils/auth';
 
 interface SignupData {
   email: string;
@@ -104,8 +105,16 @@ export const updateProfile = async (data: ProfileData): Promise<ProfileResponse>
       throw new Error(errorData.detail || 'Profile update failed');
     }
     
-    // After successful update, fetch the updated profile data
-    return await getProfile();
+    // Store the updated profile data locally since the API doesn't return the full data
+    const responseData = await response.json();
+    
+    // Return a constructed profile response with the data we just sent
+    // This ensures we have the data even if the API doesn't return it
+    return {
+      email: getUserEmail() || '',
+      dob: data.dob,      // Use the data we just sent to the API
+      gender: data.gender // Use the data we just sent to the API
+    };
   } catch (error) {
     console.error('Profile update error:', error);
     toast.error('Failed to update profile: ' + (error instanceof Error ? error.message : String(error)));
@@ -144,12 +153,16 @@ export const getProfile = async (): Promise<ProfileResponse> => {
     
     // Check if the API is returning just a message or the actual profile data
     if (data.msg && !data.email) {
-      // If we only get a message, construct a default profile response
+      // If we only get a message, retrieve profile data from localStorage
       // This is a workaround if the API doesn't return profile data directly
+      // Get the profile data from localStorage (the most recent values we've saved)
+      const storedDob = localStorage.getItem('user_dob') || '';
+      const storedGender = localStorage.getItem('user_gender') || '';
+      
       return {
-        email: localStorage.getItem('user_email') || '',
-        dob: '',
-        gender: ''
+        email: getUserEmail() || '',
+        dob: storedDob,
+        gender: storedGender
       };
     }
     
