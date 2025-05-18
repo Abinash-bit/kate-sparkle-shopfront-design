@@ -30,11 +30,14 @@ const CompleteProfilePage = () => {
     
     try {
       setLoading(true);
+      console.log('Submitting profile data:', { dob, gender });
       
-      // Store profile data locally before sending to API
+      // Store profile data locally
       setUserProfile(dob, gender);
       
-      await updateProfile({ dob, gender });
+      // Send profile data to API
+      const updatedProfile = await updateProfile({ dob, gender });
+      console.log('Updated profile:', updatedProfile);
       
       toast({
         title: "Profile updated!",
